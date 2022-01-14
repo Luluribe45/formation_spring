@@ -1,5 +1,4 @@
 package com.cours.config;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,10 +36,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authenticationProvider(provider).authorizeRequests()
-				.antMatchers(HttpMethod.GET, "/api/findById/*").authenticated().antMatchers(HttpMethod.DELETE, "/api/*")
-				.hasAnyAuthority("SUPER").anyRequest().permitAll()
+				.antMatchers(HttpMethod.GET, "/api/findByPrenom/*").authenticated()
+				.antMatchers(HttpMethod.DELETE,"/api/*").hasAnyAuthority("SUPER_USER")
+				.anyRequest().permitAll()
 
-				.and().httpBasic();
+				.and()
+				.httpBasic();
 	}
 }
 
