@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+    db:
+        hostname: db
+        image: postgres
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: "base_personnes"
+            POSTGRES_USER: "application"
+            POSTGRES_PASSWORD: "passw0rd"
+
+    app:
+        hostname: app
+        restart: on-failure
+        image: my_micro_service_gestion_personnes:latest
+        build:
+            context: ./
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/base_personnes
+        ports:
+        -   8080:8080
+        depends_on:
+            -   db
+   

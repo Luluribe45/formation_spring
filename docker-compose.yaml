@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+    db:
+        hostname: db
+        image: mysql
+# For MySQL 8
+        ports:
+            - "3308:3306"
+# For MySQL 5
+#       ports:
+#           - "3308:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: "base_personnes"
+            MYSQL_USER: "application"
+            MYSQL_PASSWORD: "passw0rd"
+#       command: --default-authentication-plugin=mysql_native_password
+        volumes: 
+            - ./init:/docker-entrypoint-initdb.d
+        healthcheck:
+            test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+            timeout: 20s
+            retries: 3
+    
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        ports:
+            - 8086:80
+        environment:
+           PMA_USER: "application"
+           PMA_PASSWORD: "passw0rd"
+
+    app:
+        hostname: app
+        restart: on-failure
+        image: my_micro_service_gestion_personnes:latest
+        build:
+            context: ./
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/base_personnes
+        ports:
+        -   8080:8080
+        depends_on:
+            -   db
+            -   phpmyadmin
+            
